@@ -25,8 +25,11 @@ descriptor array保存了命名属性的数量，和key对应的偏移位置deta
 具有相同结构的object（相同顺序的相同命名属性）共享相同的HiddenClass。
 
 例子：
+
 ![](../image/adding-properties.png)
+
 每次增加属性时，HiddenClass也会改变，从而形成一颗转移树transition tree。（如下图，改变integer-index属性不会改变HiddenClass。）
+
 ![](../image/transitions.png)
 ![](../image/transition-trees.png)
 
@@ -41,12 +44,14 @@ V8会尽量避免以字典形式存储属性，因为字典会阻碍某些优化
 ## in-object vs. 快属性 ##
 in-object属性是直接存储在object结构内的（直接存值，非引用）。**是最快的访问方式**。
 默认in-object属性为10。超出数量的属性保存在properties或elements中。
+
 ![](../image/in-object-properties.png)
 
 ## 快，慢属性 ##
 快属性是存在线性的数组中，从HiddenClass的描述数组descriptor array中获取key对应的index，根据index获取properties数组中的值。
 如果object有大量的添加和删除操作，会耗费时间和内存去维护descriptor array和HiddenClass，此时快属性会变为慢属性。
 慢属性用字典作为存储方式，属性的元数据不再存在descriptor array里，而直接存在属性字典。此时添加删除属性不会改变HiddenClass。但由于inline cache在字典中不生效，所以慢属性比有inline cache的快属性慢。
+
 ![](../image/fast-vs-slow-properties.png)
 
 **总结：**
@@ -71,6 +76,7 @@ console.log(o[1]);          // Prints 'B'.
 console.log(o[2]);          // Prints 'c'.
 console.log(o[3]);          // Prints undefined
 ```
+
 ![](../image/hole.png)
 
 **当数组中元素删除后，最好是用一个特殊值_hole代替原位置，保证elements数组是紧凑的，避免查找某值的时候往原型链上找。（耗时）**
